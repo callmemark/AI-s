@@ -1,2 +1,2 @@
 # AI-s
-Repositories of my machine learning projects
+Repository for my machine learning projects
