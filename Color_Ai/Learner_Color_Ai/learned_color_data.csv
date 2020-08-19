@@ -1,4 +1,23 @@
 R,G,B,Color name,Id
+22,240,32,green-shade,5
+212,44,44,red-shade,1
+141,161,141,green-shade,5
+123,140,123,green-shade,5
+130,168,130,green-shade,5
+147,191,147,green-shade,5
+201,255,201,green-shade,5
+222,152,82,orange-shade,2
+196,151,108,orange-shade,2
+201,155,111,orange-shade,2
+166,120,78,orange-shade,2
+112,89,68,orange-shade,2
+133,114,97,orange-shade,2
+105,51,0,orange-shade,2
+255,229,204,orange-shade,2
+224,188,153,orange-shade,2
+189,167,145,orange-shade,2
+250,218,187,orange-shade,2
+224,179,135,orange-shade,2
 57,157,207,blue-shade,9
 196,196,255,blue-shade,9
 191,191,255,blue-shade,9
