@@ -1,19 +1,21 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-
+import re
 from sklearn.neighbors import KNeighborsClassifier
+
+
+
 
 class ColorAI():
     def __init__(self):
         self.trained_data = pd.read_csv("learned_color_data.csv")
-
-
+    
+    
     def help(self):
         print("getColor, showDataFrame, quiz, exam, showExamScore, showQuizScore, teach, showDataMemory")
-
-
-
+    
+    
     def showDataMemory(self):
 
         color_name_guide = self.trained_data["Color name"]
@@ -22,16 +24,19 @@ class ColorAI():
         color_id = self.trained_data["Id"]
         result_color_id = color_id.drop_duplicates()
 
-        self.user_guide = pd.DataFrame({"Color family" : result_color_name,
+        user_guide = pd.DataFrame({"Color family" : result_color_name,
                                    "ID" : result_color_id
                                   })
 
-        print(self.user_guide)
+        print(user_guide)
+        
     
 
     
     def getColor(self, color_inp, data_ref):
         self.data = data_ref
+        
+        print(color_inp)
 
 
         R = self.data["R"]
@@ -58,14 +63,10 @@ class ColorAI():
   
     
     
-
     def showDataFrame(self):
-        pd.set_option("display.max_rows", 1000)
         print(self.trained_data)
     
     
-
-
     def quiz(self):
         n_test = 5
         n_correct = 0
@@ -130,7 +131,6 @@ class ColorAI():
         new_score_data.to_csv("exam_scores.csv", index = False)
             
     
-
     def showExamScore(self):
         scores = pd.read_csv("exam_scores.csv")
         print(scores)
@@ -148,28 +148,28 @@ class ColorAI():
         plt.plot(scores["Scores"])
         plt.show()
             
-
     
     def teach(self):
         teach_status = "T"
         n_test = 0
         n_correct = 0
         n_wrong = 0
-
-        self.showDataMemory()
         
         while teach_status == "T":
-            print("-" * 15 + str(n_test) +"-" * 15)
+            print("-" * 10 + str(n_test) +"-" * 10)
             
             n_test += 1
             
-            uinp = input("color:").split(",")
-
-            R = int(uinp[0])
-            G = int(uinp[1])
-            B = int(uinp[2])
-
-            RGB = [R, G, B]
+            uinp = input("color:")
+            uinp_enc = re.split(", ", uinp)
+            print(uinp_enc)
+            
+            RGB = []
+            
+            for num in uinp_enc:
+                RGB.append(int(num))
+            
+            print(RGB)
 
             self.getColor(RGB, self.trained_data)
 
@@ -177,6 +177,12 @@ class ColorAI():
 
             if answer_status == "C":
                 n_correct += 1
+                
+                R = RGB[0]
+                G = RGB[1]
+                B = RGB[2]
+                
+                print(R, G, B)
                 
                 shade_fam = self.data["Color name"][self.prediction_index]
                 data_id = self.data["Id"][self.prediction_index]
@@ -189,8 +195,6 @@ class ColorAI():
 
             if answer_status == "W":
                 n_wrong += 1
-
-                print(self.user_guide)
                 
                 add_learnings = input("Add New Lesson? Y/N :")
                 
@@ -206,8 +210,10 @@ class ColorAI():
             teach_status = input("teaching status T/F:")
             
             if teach_status == "F":
-                print("-" * 15 + "teaching ended" + "-" * 15)
+                print("-" * 10 + "teaching ended" + "-" * 10)
                 print("number of tests : ", n_test)
                 print("correct answer : ", n_correct)
                 print("wrong answer : ", n_wrong)
                 break
+
+
