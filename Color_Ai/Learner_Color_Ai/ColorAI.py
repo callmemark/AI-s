@@ -4,9 +4,29 @@ import numpy as np
 
 from sklearn.neighbors import KNeighborsClassifier
 
-class Learn():
+class ColorAI():
     def __init__(self):
         self.trained_data = pd.read_csv("learned_color_data.csv")
+
+
+    def help(self):
+        print("getColor, showDataFrame, quiz, exam, showExamScore, showQuizScore, teach, showDataMemory")
+
+
+
+    def showDataMemory(self):
+
+        color_name_guide = self.trained_data["Color name"]
+        result_color_name = color_name_guide.drop_duplicates()
+
+        color_id = self.trained_data["Id"]
+        result_color_id = color_id.drop_duplicates()
+
+        self.user_guide = pd.DataFrame({"Color family" : result_color_name,
+                                   "ID" : result_color_id
+                                  })
+
+        print(self.user_guide)
     
 
     
@@ -38,10 +58,14 @@ class Learn():
   
     
     
+
     def showDataFrame(self):
+        pd.set_option("display.max_rows", 1000)
         print(self.trained_data)
     
     
+
+
     def quiz(self):
         n_test = 5
         n_correct = 0
@@ -106,6 +130,7 @@ class Learn():
         new_score_data.to_csv("exam_scores.csv", index = False)
             
     
+
     def showExamScore(self):
         scores = pd.read_csv("exam_scores.csv")
         print(scores)
@@ -123,15 +148,18 @@ class Learn():
         plt.plot(scores["Scores"])
         plt.show()
             
+
     
     def teach(self):
         teach_status = "T"
         n_test = 0
         n_correct = 0
         n_wrong = 0
+
+        self.showDataMemory()
         
         while teach_status == "T":
-            print("-" * 10 + str(n_test) +"-" * 10)
+            print("-" * 15 + str(n_test) +"-" * 15)
             
             n_test += 1
             
@@ -161,6 +189,8 @@ class Learn():
 
             if answer_status == "W":
                 n_wrong += 1
+
+                print(self.user_guide)
                 
                 add_learnings = input("Add New Lesson? Y/N :")
                 
@@ -176,13 +206,8 @@ class Learn():
             teach_status = input("teaching status T/F:")
             
             if teach_status == "F":
-                print("-" * 10 + "teaching ended" + "-" * 10)
+                print("-" * 15 + "teaching ended" + "-" * 15)
                 print("number of tests : ", n_test)
                 print("correct answer : ", n_correct)
                 print("wrong answer : ", n_wrong)
                 break
-
-
-guide = pd.read_csv("learned_color_data.csv")
-pd.set_option("display.max_rows", 500)
-print(guide.shape)
