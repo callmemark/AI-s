@@ -7,19 +7,20 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 import matplotlib.image as mpimg
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+
 
 
 class ColorAI():
     def __init__(self):
         self.trained_data = pd.read_csv("learned_color_data.csv")
-        self.number_of_neighbors = 27
+        self.number_of_neighbors = 15
     
     
-    def help(self):
-        print("getColor, showDataFrame, quiz, exam, showExamScore, showQuizScore, teach, showDataMemory, perforamceEval")
+    def showMethods(self):
+        print("showDataMemory, perforamceEval, getColor, showDataFrame, teach, getColorFromImage")
     
-    
-    
+
     def showDataMemory(self):
         color_name_guide = self.trained_data["Color name"]
         result_color_name = color_name_guide.drop_duplicates()
@@ -48,44 +49,6 @@ class ColorAI():
         print(y_pred)
         print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
         
-
-        
-    def evaluationTest(self):
-        self.evaluation_file = pd.read_csv("evaluate_sheet.csv")
-        
-        
-        score = 0
-        number = 0
-        for test in self.evaluation_file["given"]:
-            given = re.split(", ", test)
-            print("givens:", given)
-            
-            questions = [] 
-            for iterarion in given:
-                questions.append(int(iterarion))
-            
-            self.n_test = self.evaluation_file["number"][number]
-            number += 1
-
-            self.getColor(questions, self.trained_data, "exam")
-            answer_status = input("answer status T / any key:")
-            
-            if answer_status == "T":
-                score += 1
-            
-        
-        print("total score: ", score)
-        date = datetime.today().strftime('%Y-%m-%d')
-        
-        data_to_append = {"score":score, "date":date}
-        
-        evaluation_score_data = pd.read_csv("evaluation_score.csv")
-        new_score_data = evaluation_score_data.append(data_to_append, ignore_index=True)
-        
-        new_score_data.to_csv("evaluation_score.csv", index = False)
-    
-        
-
     
     def getColor(self, color_inp, data_ref, req = "teach"):
         self.data = data_ref
@@ -112,94 +75,15 @@ class ColorAI():
         if req == "exam":
             print(self.n_test, "prediction:", self.data["Color name"][self.prediction_index], color_inp)
         if req == "teach":
-            print("prediction:", self.data["Color name"][self.prediction_index], color_inp)
+            print("prediction:", self.data["Color name"][self.prediction_index])
         #print("prediction_index:", self.data["Id"][self.prediction_index])
 
     
     def showDataFrame(self):
+        pd.set_option("display.max_rows", 10000)
         print(self.trained_data)
     
     
-    def quiz(self):
-        n_test = 5
-        n_correct = 0
-        
-        while n_test != 0:
-            n_test -= 1
-            
-            question = input("test :").split(",")
-            
-            R = int(question[0])
-            G = int(question[1])
-            B = int(question[2])
-            
-            RGB = [R, G, B]
-            
-            self.getColor(RGB, self.trained_data)
-
-            answer_status = input("answer status :")
-
-            if answer_status == "C":
-                n_correct += 1
-            
-        
-            score = n_correct
-            
-            print("-" * 10 + "page" + "-" * 10)
-        
-        print("score :", score)
-        
-        
-        new_score = {"Scores" : score}
-        
-        score_data = pd.read_csv("Scores.csv")
-        new_score_data = score_data.append(new_score, ignore_index=True)
-        
-        new_score_data.to_csv("Scores.csv")
-    
-    
-    
-    def exam(self):
-        given = pd.read_csv(input("exam sheet:"))
-        
-        for ask in given["given"]:
-            enc_quest = re.split(",", ask)
-            
-            uinp = []
-            for each in enc_quest:
-                uinp.append(int(each))
-                
-            self.getColor(uinp, self.trained_data)
-        
-        print(given["answer"])
-        
-        score = int(input("Score:"))
-        n_test = int(input("n_test:"))
-        data_to_append = {"n_test":n_test, "score":score}
-        
-        exam_score_data = pd.read_csv("exam_scores.csv")
-        new_score_data = exam_score_data.append(data_to_append, ignore_index=True)
-        
-        new_score_data.to_csv("exam_scores.csv", index = False)
-            
-    
-    def showExamScore(self):
-        scores = pd.read_csv("exam_scores.csv")
-        print(scores)
-        
-        plt.plot(scores["score"], "o", color = "orange")
-        plt.plot(scores["score"], color = "green")
-        plt.show()
-        
-    
-    
-    def showQuizScore(self):
-        scores = score_data = pd.read_csv("Scores.csv")
-        print(scores)
-        
-        plt.plot(scores["Scores"])
-        plt.show()
-            
     
     def teach(self):
         teach_status = "T"
@@ -244,12 +128,17 @@ class ColorAI():
                 
                 print(new_data)
 
-            if answer_status == "W":
-                n_wrong += 1
+            elif answer_status == "W":
+                R = RGB[0]
+                G = RGB[1]
+                B = RGB[2]
                 
+                n_wrong += 1
+
                 add_learnings = input("Add New Lesson? Y/N :")
                 
                 if add_learnings == "Y":
+                    
                     
                     self.showDataMemory()
                     
@@ -259,9 +148,11 @@ class ColorAI():
                     
                     self.trained_data = pd.concat([new_data, self.trained_data]).reset_index(drop = True)
                     self.trained_data.to_csv("learned_color_data.csv", index=False)
-                             
             
-            teach_status = input("teaching status T/F:")
+            else:
+                print("input error")
+                break
+                             
             
             if teach_status == "F":
                 print("-" * 10 + "teaching ended" + "-" * 10)
@@ -269,11 +160,23 @@ class ColorAI():
                 print("correct answer : ", n_correct)
                 print("wrong answer : ", n_wrong)
                 break
+            
+            teach_status = input("teaching status T/F:")
+            
                 
                 
                 
-    def imageColor(self):
-        image_inp = mpimg.imread("images/orange.jpg")
+    def getColorFromImage()(self, show_plot = False, show_info = False):
+        uinp = input("image:")
+        
+        print("process start")
+        
+        try:
+            image_inp = mpimg.imread(uinp)
+        except Exception as error:
+            print(error)
+        
+        
         image_size = np.array(image_inp)
         image_total_pixel = int((image_inp.shape[2] * image_inp.shape[1] * image_inp.shape[0]))
 
@@ -286,16 +189,17 @@ class ColorAI():
         sequence_1 = np.array(image_inp[0:50]).reshape(seq_shape, 3)
         sequence_2 = np.array(image_inp[ int(image_inp.shape[0] / 2): int((image_inp.shape[0] / 2) + 50)]).reshape(seq_shape, 3)
         sequence_3 = np.array(image_inp[ int(image_inp.shape[0] - 50 ): int(image_inp.shape[0])]).reshape(seq_shape, 3)
+        
+        
+        print("---" * 15 + "---" * 15 )
+        
+        if show_plot == True:
+            fig, axs = plt.subplots(3)
 
-        fig, axs = plt.subplots(3)
 
-
-        axs[0].imshow(image_inp[0:50])
-        axs[1].imshow(image_inp[ int(image_inp.shape[0] / 2): int((image_inp.shape[0] / 2) + 50)])
-        axs[2].imshow(image_inp[ int(image_inp.shape[0] - 50 ): int(image_inp.shape[0])])
-
-
-        image_inp.shape[0]
+            axs[0].imshow(image_inp[0:50])
+            axs[1].imshow(image_inp[ int(image_inp.shape[0] / 2): int((image_inp.shape[0] / 2) + 50)])
+            axs[2].imshow(image_inp[ int(image_inp.shape[0] - 50 ): int(image_inp.shape[0])])
 
 
 
@@ -308,16 +212,14 @@ class ColorAI():
 
 
         data = pd.read_csv("learned_color_data.csv")
-        R = data["R"]
-        G = data["G"]
-        B = data["B"]
+        
+        Red_pixel = data["R"]
+        Green_pixel = data["G"]
+        Blue_pixel = data["B"]
 
-        feat = np.array([R, G, B])
+        feat = np.array([Red_pixel, Green_pixel, Blue_pixel])
 
 
-
-
-        from sklearn.ensemble import RandomForestClassifier
 
         data = pd.read_csv("learned_color_data.csv")
 
@@ -328,18 +230,18 @@ class ColorAI():
         model.fit(X, y)
 
         prediction = model.predict(enc_reading)
-        print(prediction.shape)
-
-        print(prediction)
-
 
 
 
         result_color_name = pd.DataFrame({"answers" : prediction}).drop_duplicates()
 
-
-        print(np.array(result_color_name["answers"]))
         answers = np.array(result_color_name["answers"])
+        
+        
+        if show_info == True:
+            print("INFORMATION:" + "\n")
+            print("colors found", answers)
+            self.showDataMemory()
 
 
         turn = 0
@@ -363,7 +265,5 @@ class ColorAI():
 
         final_answer_index = answers[answer_index]
         final_answer = np.where(data["Id"] == final_answer_index)[0][0]
-        print(data["Color name"].iloc[final_answer])
-
-
-
+ 
+        print("\n" + "Prominent Color:", data["Color name"].iloc[final_answer])
