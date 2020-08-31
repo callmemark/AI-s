@@ -166,7 +166,7 @@ class ColorAI():
                 
                 
                 
-    def getColorFromImage()(self, show_plot = False, show_info = False):
+    def getColorFromImage(self, show_plot = False, show_info = False):
         uinp = input("image:")
         
         print("process start")
