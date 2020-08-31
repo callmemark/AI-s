@@ -1,4 +1,5 @@
 # AI-s
+### Documentaions in https://github.com/xxmeowxx/AI-s/wiki
 ### Repository for my AI projects
 
 ### Machine Learning Projects:
